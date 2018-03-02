@@ -119,8 +119,7 @@ void ParticleFilter::resample() {
 }
 
 Particle ParticleFilter::SetAssociations(Particle& particle, const std::vector<int>& associations, 
-                                     const std::vector<double>& sense_x, const std::vector<double>& sense_y)
-{
+                                     const std::vector<double>& sense_x, const std::vector<double>& sense_y) {
     //particle: the particle to assign each listed association, and association's (x,y) world coordinates mapping to
     // associations: The landmark id that goes along with each listed association
     // sense_x: the associations x mapping already converted to world coordinates
@@ -131,8 +130,7 @@ Particle ParticleFilter::SetAssociations(Particle& particle, const std::vector<i
     particle.sense_y = sense_y;
 }
 
-string ParticleFilter::getAssociations(Particle best)
-{
+string ParticleFilter::getAssociations(Particle best) {
 	vector<int> v = best.associations;
 	stringstream ss;
     copy( v.begin(), v.end(), ostream_iterator<int>(ss, " "));
@@ -141,8 +139,7 @@ string ParticleFilter::getAssociations(Particle best)
     return s;
 }
 
-string ParticleFilter::getSenseX(Particle best)
-{
+string ParticleFilter::getSenseX(Particle best) {
 	vector<double> v = best.sense_x;
 	stringstream ss;
     copy( v.begin(), v.end(), ostream_iterator<float>(ss, " "));
@@ -151,8 +148,7 @@ string ParticleFilter::getSenseX(Particle best)
     return s;
 }
 
-string ParticleFilter::getSenseY(Particle best)
-{
+string ParticleFilter::getSenseY(Particle best) {
 	vector<double> v = best.sense_y;
 	stringstream ss;
     copy( v.begin(), v.end(), ostream_iterator<float>(ss, " "));

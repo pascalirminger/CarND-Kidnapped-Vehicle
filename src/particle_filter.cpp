@@ -164,6 +164,14 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[], c
 			}
 		}
 
+		// If all landmarks are outside of sensor range, we can set the weight
+		// of this particle to zero and move on to the next particle
+		const int numLandmarksInRange = landmarks_in_range.size();
+		if (numLandmarksInRange == 0) {
+			particles[i].weight = 0.0;
+			continue;
+		}
+
 		/**********************************************************************
 		 * STEP 2: Transform observation coordinates to map coordinates
 		 *********************************************************************/

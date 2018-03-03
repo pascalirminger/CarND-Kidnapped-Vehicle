@@ -63,9 +63,9 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 	const double std_theta = std_pos[2];
 
 	// Create normal (Gaussian) distribution for x, y, and theta
-	normal_distribution<double> dist_x(x, std_x);
-	normal_distribution<double> dist_y(y, std_y);
-	normal_distribution<double> dist_theta(theta, std_theta);
+	normal_distribution<double> dist_x(0.0, std_x);
+	normal_distribution<double> dist_y(0.0, std_y);
+	normal_distribution<double> dist_theta(0.0, std_theta);
 
 	// Predict update
 	for (int i=0; i<num_particles; i++) {  // For each particle
@@ -221,15 +221,42 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[], c
 			}
 		}
 		particles[i].weight = weight;
-		weights[i] = weight;
 	}
 }
 
 void ParticleFilter::resample() {
-	// TODO: Resample particles with replacement with probability proportional to their weight. 
-	// NOTE: You may find std::discrete_distribution helpful here.
-	//   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
+	// Get all current weights and weight maxima
+	vector<double> weights;
+	double maxWeight = numeric_limits<double>::min();
+	for (int i=0; i<num_particles; i++) {  // For each particle
+		weights.push_back(particles[i].weight);
+		
+		// If the weight is greater than maxima, update maxima
+      	if (particles[i].weight > maxWeight) {
+			maxWeight = particles[i].weight;
+		}
+	}
 
+	// Initialize distributions
+	uniform_int_distribution<int> distInt(0, num_particles - 1);
+	uniform_real_distribution<double> distReal(0.0, maxWeight);
+	
+	// Initialize random starting index for resampling wheel
+	int index = distInt(gen);
+
+	// Spin the wheel!
+	double beta = 0.0;
+	vector<Particle> resampledParticles;
+	for (int i=0; i<num_particles; i++) {  // For each particle
+		beta += distReal(gen) * 2.0;
+		while (beta > weights[index]) {
+			beta -= weights[index];
+			index = (index + 1) % num_particles;
+		}
+		resampledParticles.push_back(particles[index]);
+	}
+
+	particles = resampledParticles;
 }
 
 Particle ParticleFilter::SetAssociations(Particle& particle, const std::vector<int>& associations, 

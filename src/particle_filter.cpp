@@ -227,38 +227,22 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[], c
 }
 
 void ParticleFilter::resample() {
-	// Get all current weights and weight maxima
+	// Get all current weights
 	vector<double> weights;
-	double maxWeight = numeric_limits<double>::min();
 	for (int i=0; i<num_particles; i++) {  // For each particle
 		weights.push_back(particles[i].weight);
-		
-		// If the weight is greater than maxima, update maxima
-      	if (particles[i].weight > maxWeight) {
-			maxWeight = particles[i].weight;
-		}
 	}
 
-	// Initialize distributions
-	uniform_int_distribution<int> distInt(0, num_particles - 1);
-	uniform_real_distribution<double> distReal(0.0, maxWeight);
-	
-	// Initialize random starting index for resampling wheel
-	int index = distInt(gen);
+	// Initialize distribution
+	discrete_distribution<> dist(weights.begin(), weights.end());
 
 	// Spin the wheel!
-	double beta = 0.0;
-	vector<Particle> resampledParticles;
-	for (int i=0; i<num_particles; i++) {  // For each particle
-		beta += distReal(gen) * 2.0;
-		while (beta > weights[index]) {
-			beta -= weights[index];
-			index = (index + 1) % num_particles;
-		}
-		resampledParticles.push_back(particles[index]);
+	vector<Particle> resampledParticles(num_particles);
+	for (auto& p : resampledParticles) {
+		p = particles[dist(gen)];
 	}
 
-	particles = resampledParticles;
+	particles = move(resampledParticles);
 }
 
 Particle ParticleFilter::SetAssociations(Particle& particle, const std::vector<int>& associations, 

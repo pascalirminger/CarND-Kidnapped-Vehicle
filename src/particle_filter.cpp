@@ -220,12 +220,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[], c
 
 			// Calculate weight
 			const double p = exp(-term_exp_x * dX * dX - term_exp_y * dY * dY) / term_base;
-			if (p < EPS) {
-				weight *= EPS;
-			}
-			else {
-				weight *= p;
-			}
+			weight *= p;
 		}
 		particles[i].weight = weight;
 	}

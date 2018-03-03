@@ -197,7 +197,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[], c
 		 * STEP 4: Update particle weights
 		 *********************************************************************/
 		const int numMapObservations = map_observations.size();
-		const int numLandmarksInRange = landmarks_in_range.size();
 		double weight = 1.0;
 		for (int j=0; j<numMapObservations; j++) {  // For each mapped observation
 			// Extract observation data
